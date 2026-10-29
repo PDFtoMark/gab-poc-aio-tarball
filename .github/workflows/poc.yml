@@ -7,7 +7,7 @@ jobs:
   add-to-registry:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository (same shape as add-to-registry: credentials persisted)
+      - name: Checkout repository (credentials persisted like the target job)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -15,7 +15,7 @@ jobs:
         run: |
           echo "sha_before=$(sha256sum src/add-to-registry.js | cut -d' ' -f1)"
           node src/add-to-registry.js
-      - name: Simulate `npm v <pkg> dist.tarball | xargs curl | tar -xz` then `node src/add-to-registry.js`
+      - name: Extract npm tarball and run registry script
         run: |
           python3 .poc/make-tarball.py
           cat pkg.tgz | tar -xz
